@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:xenial AS needs-squashing
 
 VOLUME /statedir
 ENTRYPOINT ["/entrypoint.sh"]
@@ -193,4 +193,8 @@ RUN apt-get -y update && \
     apt-get -y dist-upgrade && \
     apt-get -y autoremove && \
     apt-get -y clean && \
-    rm -rf /var/lib/apt/lists/* /home/packet/requirements.txt
+    rm -rf /tmp/* /var/lib/apt/lists/* /home/packet/requirements.txt
+
+FROM scratch
+COPY --from=needs-squashing / /
+

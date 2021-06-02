@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM alpine:3.12 AS needs-squashing
 
 RUN apk add --no-cache --no-progress --update --upgrade \
         bash \
@@ -61,7 +61,8 @@ RUN curl -fL https://github.com/mvdan/sh/releases/download/v2.3.0/shfmt_v2.3.0_l
     chmod +x /bin/shfmt
 
 RUN pip3 install click j2cli packet-python==1.38.2 && \
-    pip3 install coverage
+    pip3 install coverage && \
+    pip3 install docker-squash
 
 RUN curl -L https://github.com/git-lfs/git-lfs/releases/download/v2.5.1/git-lfs-linux-amd64-v2.5.1.tar.gz >/tmp/git-lfs.tar.gz && \
     echo '9565fa9c2442c3982567a3498c9352cda88e0f6a982648054de0440e273749e7  /tmp/git-lfs.tar.gz' | sha256sum -c && \
@@ -69,3 +70,14 @@ RUN curl -L https://github.com/git-lfs/git-lfs/releases/download/v2.5.1/git-lfs-
     git-lfs install
 
 COPY tls/ /tls/
+
+RUN rm -rf /tmp/* $HOME/.cache
+
+RUN rm -vfr \
+    /tmp/* \
+    /var/tmp/* \
+    /var/lib/apt/lists/*
+
+FROM scratch
+COPY --from=needs-squashing / /
+
