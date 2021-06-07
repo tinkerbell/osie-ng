@@ -39,12 +39,10 @@ RUN apk add --no-cache --no-progress --update --upgrade \
         --repository=http://dl-cdn.alpinelinux.org/alpine/v3.11/community \
         lshw \
         && \
-    mv /etc/apk/repositories.old /etc/apk/repositories && \
-    apk add --no-cache --update --upgrade \
-        --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        cfssl \
+    mv /etc/apk/repositories.old /etc/apk/repositories \
    ;
 
+RUN GOBIN=/bin GO111MODULE=on go get -v github.com/cloudflare/cfssl/cmd/cfssl@v1.6.0 github.com/cloudflare/cfssl/cmd/cfssljson@v1.6.0
 
 COPY ./proxy /tmp/proxy/
 RUN cd /tmp/proxy && \
