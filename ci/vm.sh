@@ -141,6 +141,8 @@ gen_metadata() {
 		  "wipe_disks": true
 		}
 	EOF
+	mkdir -p 2009-04-04/meta-data
+	echo "$id" >2009-04-04/meta-data/instance-id
 }
 
 do_symlink_ro_rw() {
@@ -360,9 +362,7 @@ do_test() {
 
 	color=34
 	colorize $color "== Running Boot & Phone-Home Test =="
-	test_boot_and_phone_home |& stdbuf -i 0 sed "s/^/$(colorize $color 'test_boot_and_phone_home│')/" &&
-		echo "this test is expected to fail" >&2 &&
-		exit 1
+	test_boot_and_phone_home |& stdbuf -i 0 sed "s/^/$(colorize $color 'test_boot_and_phone_home│')/"
 	rm -f uploads/*
 
 	color=35
